@@ -108,10 +108,10 @@
         let employees = JSON.parse(localStorage.getItem("employees")) || [];
         let tableBody = document.getElementById("employeeTable");
         tableBody.innerHTML = "";
-        employees.forEach((emp) => {
+        employees.forEach((emp, index) => {
           let row = document.createElement("tr");
           row.innerHTML = `
-                    <td>${emp[0]}</td>
+                    <td>${index + 1}</td>
                     <td>${emp[1]}</td>
                     <td>${emp[2]}</td>
                     <td>${emp[3]}</td>
@@ -125,29 +125,24 @@
       }
       function deleteEmployee(button) {
         let row = button.parentElement.parentElement;
-        let id = row.cells[0].innerText;
+        let id = parseInt(row.cells[0].innerText) - 1;
         let employees = JSON.parse(localStorage.getItem("employees")) || [];
-        employees = employees.filter((emp) => emp[0] != id);
+        employees.splice(id, 1);
         localStorage.setItem("employees", JSON.stringify(employees));
         row.style.animation = "fadeOut 0.5s ease-out";
-        setTimeout(() => row.remove(), 500);
+        setTimeout(() => location.reload(), 500);
       }
       function updateEmployee(button) {
         let row = button.parentElement.parentElement;
-        let id = row.cells[0].innerText;
+        let id = parseInt(row.cells[0].innerText) - 1;
         let name = prompt("Enter new name:", row.cells[1].innerText);
         let age = prompt("Enter new age:", row.cells[2].innerText);
         let address = prompt("Enter new address:", row.cells[3].innerText);
         if (name && age && address) {
           let employees = JSON.parse(localStorage.getItem("employees")) || [];
-          let index = employees.findIndex((emp) => emp[0] == id);
-          if (index !== -1) {
-            employees[index] = [id, name, age, address];
-            localStorage.setItem("employees", JSON.stringify(employees));
-          }
-          row.cells[1].innerText = name;
-          row.cells[2].innerText = age;
-          row.cells[3].innerText = address;
+          employees[id] = [id + 1, name, age, address];
+          localStorage.setItem("employees", JSON.stringify(employees));
+          location.reload();
         }
       }
       window.onload = loadEmployees;
