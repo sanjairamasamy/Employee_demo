@@ -1,0 +1,156 @@
+<!-- View Employees Page -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Employees</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      table {
+        width: 80%;
+        border-collapse: collapse;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        border-right: 1px solid #ccc;
+      }
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+      .action-buttons button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+      }
+      .update {
+        background-color: #28a745;
+        color: white;
+      }
+      .update:hover {
+        background-color: #218838;
+        transform: scale(1.05);
+      }
+      .delete {
+        background-color: #dc3545;
+        color: white;
+      }
+      .delete:hover {
+        background-color: #c82333;
+        transform: scale(1.05);
+      }
+      .back-button {
+        margin-top: 20px;
+      }
+      .back-button button {
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: white;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+      .back-button button:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+      }
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Employee List</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Address</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="employeeTable"></tbody>
+    </table>
+    <div class="back-button">
+      <a href="homePage.html"><button>Back to Home</button></a>
+    </div>
+    <script>
+      function loadEmployees() {
+        let employees = JSON.parse(localStorage.getItem("employees")) || [];
+        let tableBody = document.getElementById("employeeTable");
+        tableBody.innerHTML = "";
+        employees.forEach((emp) => {
+          let row = document.createElement("tr");
+          row.innerHTML = `
+                    <td>${emp[0]}</td>
+                    <td>${emp[1]}</td>
+                    <td>${emp[2]}</td>
+                    <td>${emp[3]}</td>
+                    <td class="action-buttons">
+                        <button class="update" onclick="updateEmployee(this)">Update</button>
+                        <button class="delete" onclick="deleteEmployee(this)">Delete</button>
+                    </td>
+                `;
+          tableBody.appendChild(row);
+        });
+      }
+      function deleteEmployee(button) {
+        let row = button.parentElement.parentElement;
+        let id = row.cells[0].innerText;
+        let employees = JSON.parse(localStorage.getItem("employees")) || [];
+        employees = employees.filter((emp) => emp[0] != id);
+        localStorage.setItem("employees", JSON.stringify(employees));
+        row.style.animation = "fadeOut 0.5s ease-out";
+        setTimeout(() => row.remove(), 500);
+      }
+      function updateEmployee(button) {
+        let row = button.parentElement.parentElement;
+        let id = row.cells[0].innerText;
+        let name = prompt("Enter new name:", row.cells[1].innerText);
+        let age = prompt("Enter new age:", row.cells[2].innerText);
+        let address = prompt("Enter new address:", row.cells[3].innerText);
+        if (name && age && address) {
+          let employees = JSON.parse(localStorage.getItem("employees")) || [];
+          let index = employees.findIndex((emp) => emp[0] == id);
+          if (index !== -1) {
+            employees[index] = [id, name, age, address];
+            localStorage.setItem("employees", JSON.stringify(employees));
+          }
+          row.cells[1].innerText = name;
+          row.cells[2].innerText = age;
+          row.cells[3].innerText = address;
+        }
+      }
+      window.onload = loadEmployees;
+    </script>
+  </body>
+</html>
